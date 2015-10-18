@@ -19,7 +19,7 @@ void message::paintEvent(QPaintEvent *event)
     update();
 }
 
-void message::showme(statetype state, int x_co, int y_co, shapetype sh)
+void message::showme(statetype state, int x_co, int y_co, shapetype sh, QString point_m, bool str_changed)
 {
 
 
@@ -29,13 +29,19 @@ void message::showme(statetype state, int x_co, int y_co, shapetype sh)
         QString y_point2 = QString::number(height-y_co);
         if (sh == LINE)
         {
-            coordinates = "Draw line from (" + x_point + ", " + y_point +") to (" + x_point2 + ", "+ y_point2 + ")";
+            if(str_changed)
+                coordinates = "Draw line from " + first_co +" to " + point_m;
+            else
+                coordinates = "Draw line from " + first_co +" to (" + x_point2 + ", "+ y_point2 + ")";
 
         }
 
         if (sh == CIRCLE)
         {
-            coordinates = "Draw circle` centered at " + x_point + ", " + y_point +") and passing through (" + x_point2 + ", "+ y_point2 + ")";
+            if(str_changed)
+                coordinates = "Draw circle centered at " + first_co +" and passing through " + point_m;
+            else
+                coordinates = "Draw circle centered at " + first_co +" and passing through (" + x_point2 + ", "+ y_point2 + ")";
         }
     }
 
@@ -43,14 +49,37 @@ void message::showme(statetype state, int x_co, int y_co, shapetype sh)
     {
         x_point = QString::number(x_co-width);
         y_point = QString::number(height-y_co);
-        coordinates = "Draw line from (" + x_point + ", " + y_point +") to ...";
+
+        if(str_changed)
+        {
+            first_co = point_m;
+            coordinates = "Draw line from " + first_co + " to ...";
+        }
+
+        else
+        {
+            first_co = "("+x_point +", "+y_point+")";
+            coordinates = "Draw line from " + x_point + ", " + y_point +" to ...";
+        }
+
     }
 
     if(state == PRESSC)
     {
         x_point = QString::number(x_co-width);
         y_point = QString::number(height-y_co);
-        coordinates = "Draw circle centered at (" + x_point + ", " + y_point +") to ...";
+
+        if(str_changed)
+        {
+            first_co = point_m;
+            coordinates = "Draw circle centered at " + first_co + " and passing through ...";
+        }
+
+        else
+        {
+            first_co = "("+x_point +", "+y_point+")";
+            coordinates = "Draw circle centered at " + x_point + ", " + y_point +" and passing through ...";
+        }
     }
 
 

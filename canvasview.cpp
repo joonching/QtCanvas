@@ -1,6 +1,7 @@
 #include "canvasview.h"
 #include <QPainter>
 #include <QDebug>
+#include "canvas.h"
 
 canvasview::canvasview(QWidget * parent): QWidget(parent)
 {
@@ -9,6 +10,8 @@ canvasview::canvasview(QWidget * parent): QWidget(parent)
   inter = new intermediate();
   start = true;
   show_points = false;
+  here = false;
+  snapped = false;
 
   setMouseTracking(true);
 
@@ -61,6 +64,7 @@ void canvasview::paintEvent(QPaintEvent * event)
 
   if (state == SECONDCLICK)
   {
+      inter->set_bool_snap(false);
       state = RESET;
   }
 
@@ -68,6 +72,7 @@ void canvasview::paintEvent(QPaintEvent * event)
   {
     start = false;
     show_points = false;
+    snapped = false;
     emit this->send_highlight(false,false,false);
     state = INITIAL;
     shape = UNDEFINED;
@@ -99,19 +104,19 @@ void canvasview::keyPressEvent(QKeyEvent *event)
             start = true;
             show_points = true;
         }
+    }
 
-        else if (event->key() == Qt::Key_Escape)
-        {
-            emit this->send_highlight(false,false,true);
-            state = PAUSE;
-            start = true;
-            show_points = true;
-        }
+    if (event->key() == Qt::Key_Escape)
+    {
+        emit this->send_highlight(false,false,false);
+        state = SECONDCLICK;
+        start = false;
+        show_points = false;
+    }
 
-        else
-        {
-            event->ignore();
-        }
+    else
+    {
+        event->ignore();
     }
 
     update();
@@ -125,7 +130,10 @@ void canvasview::mousePressEvent(QMouseEvent *event)
         if(state == PRESSX || state == PRESSC)
         {
             state = FIRSTCLICK;
-            st = QPointF(pointx, pointy);
+            if (snapped)
+                st = snap_points;
+            else
+                st = QPointF(pointx, pointy);
             my_line.setP1(st);
         }
 
@@ -133,7 +141,10 @@ void canvasview::mousePressEvent(QMouseEvent *event)
         {
             state = SECONDCLICK;
             start = false;
-            end = QPointF(pointx, pointy);
+            if (snapped)
+                end = snap_points;
+            else
+                end = QPointF(pointx, pointy);
 
             inter->add_shape(shape, st, end);
         }
@@ -153,22 +164,44 @@ void canvasview::mouseMoveEvent(QMouseEvent *event)
 
         if (state == FIRSTCLICK)
         {
-            emit this->send_points(FIRSTCLICK,pointx, pointy, shape);
+            snap_points = QPointF(pointx, pointy);
+            if (inter->snap_point(snap_points, temp))
+            {
+                snapped = true;
+                //add a string argument so that you can pass the temp string
+                 emit this->send_points(FIRSTCLICK, pointx, pointy, shape, temp, true);
+            }
+            else
+                emit this->send_points(FIRSTCLICK, pointx, pointy, shape, temp, false);
+
         }
         else if(state == PRESSX)
         {
             snap_points = QPointF(pointx, pointy);
             if (inter->snap_point(snap_points, temp))
             {
-                qDebug() << "work2";
+                snapped = true;
+                //add a string argument so that you can pass the temp string
+                 emit this->send_points(PRESSX, pointx, pointy, shape, temp, true);
             }
+            else
+                emit this->send_points(PRESSX, pointx, pointy, shape, temp, false);
 
-            emit this->send_points(PRESSX, pointx, pointy, shape);
+
         }
 
         else if(state == PRESSC)
         {
-            emit this->send_points(PRESSC, pointx, pointy, shape);
+            snap_points = QPointF(pointx, pointy);
+            if (inter->snap_point(snap_points, temp))
+            {
+                snapped = true;
+                QString write = temp;
+                //add a string argument so that you can pass the temp string
+                 emit this->send_points(PRESSC, pointx, pointy, shape, write, true);
+            }
+            else
+                emit this->send_points(PRESSC, pointx, pointy, shape, temp, false);
         }
     }
 

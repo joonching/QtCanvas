@@ -16,10 +16,15 @@ public:
     virtual void draw(QPainter *painter, bool active);
     virtual bool snap(QPointF &point, QString &where);
     virtual qreal distance(QPointF st, QPointF end);
+    virtual void set_snap(bool snap);
 
 private:
     QPointF point1, point2;
+    QPointF highlight_point;
+    QPointF botPoint;
+    QPointF topPoint;
     int hs;
+    bool snapped;
     QLineF point_distance;
 };
 

@@ -31,14 +31,27 @@ void intermediate::add_shape(shapetype add_shape, QPointF p1, QPointF p2)
 
 bool intermediate::snap_point(QPointF &st_point, QString &where)
 {
+    bool temp = false;
     for(int i = 0; i < my_vector.size(); i++)
     {
+
        if(my_vector[i]->snap(st_point, where))
        {
-            return true;
+            temp = true;
        }
-       else
-           return false;
+    }
+
+    if(temp)
+        return true;
+    else
+        return false;
+}
+
+void intermediate::set_bool_snap(bool snapper)
+{
+    for (int i = 0; i < my_vector.size(); i++)
+    {
+        my_vector[i]->set_snap(snapper);
     }
 }
 

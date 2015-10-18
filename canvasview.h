@@ -11,6 +11,7 @@ typedef enum shapetype{CIRCLE,LINE,UNDEFINED} shapetype;
 #include <QPoint>
 #include <QMouseEvent>
 #include <QKeyEvent>
+#include <QString>
 #include "object.h"
 #include "canvas.h"
 #include "intermediate.h"
@@ -34,7 +35,7 @@ class canvasview : public QWidget
 
 signals:
     void send_highlight(bool c, bool x, bool e);
-    void send_points(statetype state, int x, int y, shapetype sh);
+    void send_points(statetype state, int x, int y, shapetype sh, QString point_m, bool change_str);
 
   private:
     statetype state;
@@ -48,6 +49,7 @@ signals:
     int p1,p2;
     QLineF my_line;
     bool start, show_points;
+    bool here, snapped;
 
   };
 

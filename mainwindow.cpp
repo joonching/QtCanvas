@@ -13,7 +13,7 @@ mainwindow::mainwindow(QWidget *parent) : QWidget(parent)
 
 
     QObject::connect(my_canvas, SIGNAL(send_highlight(bool,bool,bool)), menu_text, SLOT(receive_highlights(bool,bool,bool)));
-    QObject::connect(my_canvas, SIGNAL(send_points(statetype, int, int, shapetype)), message_text, SLOT(showme(statetype, int, int, shapetype)));
+    QObject::connect(my_canvas, SIGNAL(send_points(statetype, int, int, shapetype, QString, bool)), message_text, SLOT(showme(statetype, int, int, shapetype, QString, bool)));
     QVBoxLayout *layout = new QVBoxLayout;
     QHBoxLayout *layoutH = new QHBoxLayout;
     layoutH->addWidget(my_canvas);

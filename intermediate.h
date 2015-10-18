@@ -16,6 +16,7 @@ public :
     void i_Draw(QPainter *painter, bool active);
     void add_shape(shapetype add_shape, QPointF p1, QPointF p2);
     bool snap_point(QPointF &st_point, QString &where);
+    void set_bool_snap(bool snapper);
 
 private:
     QVector <object *> my_vector;
